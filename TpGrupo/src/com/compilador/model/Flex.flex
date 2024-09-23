@@ -1,6 +1,7 @@
 package com.compilador.model;
 
 import com.compilador.model.Simbolos;
+import com.compilador.controller.lexico.TablaSimbolos;
 
 import java_cup.runtime.Symbol;
 
@@ -27,6 +28,15 @@ CTE_STR = \"({LETRA}|[^\"])*\"
 CTE_BIN = 0b(0|1)+
 COMMENT = "//\\*([^*]|\\*+[^/])*\\*//"
 
+%{
+/**
+*   Instancia de tabla de simbolos
+*
+*/
+TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
+
+%}
+
 %%
 
 <YYINITIAL> {
@@ -35,7 +45,8 @@ COMMENT = "//\\*([^*]|\\*+[^/])*\\*//"
     "if"            { return new Symbol(Simbolos.OP_IF.ordinal(), yytext()); }
     "else"          { return new Symbol(Simbolos.OP_ELSE.ordinal(), yytext()); }
     "WRITE"         { return new Symbol(Simbolos.OP_WRITE.ordinal(), yytext()); }
-    "DECLARE.SECTION" { return new Symbol(Simbolos.OP_DECSEC.ordinal(), yytext()); }
+    "DECLARE.SECTION" {symtbl.leerArchivo();
+                       return new Symbol(Simbolos.OP_DECSEC.ordinal(), yytext()); }
     "ENDDECLARE.SECTION" { return new Symbol(Simbolos.OP_ENDECSEC.ordinal(), yytext()); }
     "PROGRAM.SECTION" { return new Symbol(Simbolos.OP_PROSEC.ordinal(), yytext()); }
     "ENDPROGRAM.SECTION" { return new Symbol(Simbolos.OP_ENDPROSEC.ordinal(), yytext()); }
@@ -70,11 +81,15 @@ COMMENT = "//\\*([^*]|\\*+[^/])*\\*//"
     "&&"            { return new Symbol(Simbolos.AND.ordinal(), yytext()); }
     "||"            { return new Symbol(Simbolos.OR.ordinal(), yytext()); }
 
-    {ID}            { return new Symbol(Simbolos.ID.ordinal(), yytext()); }
-    {CTE_INT}       { return new Symbol(Simbolos.CTE_INT.ordinal(), yytext()); }
-    {CTE_REAL}      { return new Symbol(Simbolos.CTE_REAL.ordinal(), yytext()); }
-    {CTE_STR}       { return new Symbol(Simbolos.CTE_STR.ordinal(), yytext()); }
-    {CTE_BIN}       { return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext()); }
+    {ID}            {   symtbl.agregarSimbolo("_" + yytext(), "ID", yytext(), null);
+                        return new Symbol(Simbolos.ID.ordinal(), yytext()); }
+    {CTE_INT}       {   symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
+                        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext()); }
+    {CTE_REAL}      {   symtbl.agregarSimbolo("_" + yytext(), "CTE_REAL", yytext(),null);
+                        return new Symbol(Simbolos.CTE_REAL.ordinal(), yytext()); }
+    {CTE_STR}       {    return new Symbol(Simbolos.CTE_STR.ordinal(), yytext()); }
+    {CTE_BIN}       {   symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
+                        return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext()); }
     {ESPACIO}       { /* No se realiza acción */ }
     {COMMENT}       { /* No se realiza acción */ }
 
