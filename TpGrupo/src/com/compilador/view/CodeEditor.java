@@ -1,25 +1,20 @@
 package com.compilador.view;
-import java.awt.BorderLayout;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-
+import java.awt.*;
+import javax.swing.*;
 import com.compilador.controller.editor.AnalyzeCodeAction;
 import com.compilador.controller.editor.LoadFileAction;
-
+import com.compilador.controller.editor.SaveFileAction;
+import com.compilador.controller.editor.ShowTableAction;
 
 public class CodeEditor extends JFrame {
     private JTextArea textArea;
     private JTextArea resultArea;
-    private JButton loadButton, analyzeButton;
+    private JButton loadButton, analyzeButton, saveButton, showTableButton;
 
     public CodeEditor() {
-        setTitle("Editor de Código");
-        setSize(800, 400); // Aumentar el tamaño para acomodar el resultArea
+        setTitle("IDE");
+        setSize(1000, 1000); // Aumentar el tamaño para acomodar el resultArea
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -50,19 +45,28 @@ public class CodeEditor extends JFrame {
         analyzeButton = new JButton("Analizar Código");
         analyzeButton.addActionListener(new AnalyzeCodeAction(this.textArea,this.resultArea));
 
-        // Panel para los botones
+        // Botón para guardar el contenido del área de texto en un archivo
+        saveButton = new JButton("Guardar Archivo");
+        saveButton.addActionListener(new SaveFileAction(this.textArea));
+
+        // Botón para mostrar una tabla
+        showTableButton = new JButton("Mostrar Tabla de Simbolos");
+        showTableButton.addActionListener(new ShowTableAction());
+
+        // Panel para los botones con un GridLayout
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(loadButton, BorderLayout.NORTH);
-        panel.add(analyzeButton, BorderLayout.SOUTH);
+        panel.setLayout(new GridLayout(4, 1, 5, 5)); // 4 filas, 1 columna, espacio entre botones
+        panel.add(loadButton); // Añadir el botón de cargar
+        panel.add(saveButton); // Añadir el botón de guardar
+        panel.add(showTableButton); // Añadir el botón de mostrar tabla
+        panel.add(analyzeButton); // Añadir el botón de analizar
 
         // Panel dividido para mostrar el código y los resultados
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, resultScrollPane);
-        splitPane.setDividerLocation(200);
+        splitPane.setDividerLocation(500);
 
         // Añadir los componentes al marco
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(panel, BorderLayout.EAST);
     }
-
 }
