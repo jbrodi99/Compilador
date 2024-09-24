@@ -16,6 +16,11 @@ import java_cup.runtime.Symbol;
 %column
 %char
 
+%{
+    private final int MAX_LEN_STR = 30;
+    private final int MAX_LEN_INT = 65535;
+}%
+
 DIGITO = [1-9]
 ZERO = 0
 NUMERO = {ZERO}|{DIGITO}+ 
@@ -83,13 +88,38 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 
     {ID}            {   symtbl.agregarSimbolo("_" + yytext(), "ID", yytext(), null);
                         return new Symbol(Simbolos.ID.ordinal(), yytext()); }
-    {CTE_INT}       {   symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
-                        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext()); }
-    {CTE_REAL}      {   symtbl.agregarSimbolo("_" + yytext(), "CTE_REAL", yytext(),null);
-                        return new Symbol(Simbolos.CTE_REAL.ordinal(), yytext()); }
-    {CTE_STR}       {    return new Symbol(Simbolos.CTE_STR.ordinal(), yytext()); }
-    {CTE_BIN}       {   symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
-                        return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext()); }
+    {CTE_INT} {
+        int valor = Integer.parseInt(yytext());
+        if (valor > MAX_LEN_INT) {
+            throw new Error("CTE_INT excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+        }
+        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext());
+    }
+
+    {CTE_REAL} {
+        try {
+            Float valor = Float.parseFloat(yytext());
+        } catch (NumberFormatException e) {
+            throw new Error("CTE_REAL excede el máximo de 32 bits: <" + yytext() + "> en la línea " + yyline);
+        }
+        return new Symbol(Simbolos.CTE_REAL.ordinal(), yytext());
+    }
+
+    {CTE_STR} {
+        if (yytext().length() - 2 > MAX_LEN_STR) {  // Se resta 2 para descontar las comillas
+            throw new Error("CTE_STR muy larga (máximo 30 caracteres): <" + yytext() + "> en la línea " + yyline);
+        }
+        return new Symbol(Simbolos.CTE_STR.ordinal(), yytext());
+    }
+
+    {CTE_BIN} {
+            if (yytext().length() - 2 > 16) { // Se resta 2 para descontar el 0b
+                throw new Error("CTE_BIN excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+            }
+            return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext());
+            }
+    }
+
     {ESPACIO}       { /* No se realiza acción */ }
     {COMMENT}       { /* No se realiza acción */ }
 
