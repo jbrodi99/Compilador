@@ -14,7 +14,7 @@ public class CodeEditor extends JFrame {
 
     public CodeEditor() {
         setTitle("IDE");
-        setSize(1000, 1000); // Aumentar el tamaño para acomodar el resultArea
+        setSize(1000, 700); // Aumentar el tamaño para acomodar el resultArea
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -51,7 +51,7 @@ public class CodeEditor extends JFrame {
 
         // Botón para mostrar una tabla
         showTableButton = new JButton("Mostrar Tabla de Simbolos");
-        showTableButton.addActionListener(new ShowTableAction());
+        showTableButton.addActionListener(new ShowTableAction("ts.txt"));
 
         // Panel para los botones con un GridLayout
         JPanel panel = new JPanel();
