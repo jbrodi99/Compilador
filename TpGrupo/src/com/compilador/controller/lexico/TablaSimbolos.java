@@ -6,9 +6,10 @@ import java.io.*;
 import java.util.*;
 
 public class TablaSimbolos {
+    private final int lenFormat = 100;
     private List<Map<COLUMNA,String>> symtabla = new ArrayList<>();
     private final String FILENAME;
-    private final String formato = "|%25s|%10s|%10s|%25s|%4s|";
+    private final String formato = "|%35s|%10s|%10s|%35s|%4s|";
 
     public TablaSimbolos(String filename){
         this.FILENAME = filename;
@@ -79,7 +80,11 @@ public class TablaSimbolos {
 
                 if (!append) {
                     out.println(String.format(this.getFormato(), COLUMNA.NOMBRE, COLUMNA.TOKEN, COLUMNA.TIPO, COLUMNA.VALOR, COLUMNA.LEN));
-                    out.println("--------------------------------------------------------------------------------");
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < this.lenFormat; i++) {
+                        stringBuilder.append("-");
+                    }
+                    out.println(stringBuilder.toString());
                 }
 
                 if (filas != null) {

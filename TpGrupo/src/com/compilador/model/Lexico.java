@@ -378,6 +378,8 @@ public class Lexico implements java_cup.runtime.Scanner {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
+    private final int MAX_LEN_STR = 30;
+    private final int MAX_LEN_INT = 65535;
 /**
 *   Instancia de tabla de simbolos
 *
@@ -777,8 +779,13 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
             // fall through
           case 44: break;
           case 2: 
-            { symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
-                        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext());
+            { int valor = Integer.parseInt(yytext());
+        if (valor > MAX_LEN_INT) {
+            System.out.println("CTE_INT excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+            throw new Error();
+        }
+        symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
+        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext());
             } 
             // fall through
           case 45: break;
@@ -879,7 +886,12 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
             // fall through
           case 64: break;
           case 22: 
-            { return new Symbol(Simbolos.CTE_STR.ordinal(), yytext());
+            { if (yytext().length() - 2 > MAX_LEN_STR) {  // Se resta 2 para descontar las comillas
+            System.out.println("CTE_STR muy larga (máximo 30 caracteres): <" + yytext() + "> en la línea " + yyline);
+            throw new Error();
+        }
+        symtbl.agregarSimbolo("_" + yytext(), "CTE_STR", yytext(), null);
+        return new Symbol(Simbolos.CTE_STR.ordinal(), yytext());
             } 
             // fall through
           case 65: break;
@@ -924,8 +936,12 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
             // fall through
           case 73: break;
           case 31: 
-            { symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
-                        return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext());
+            { if (yytext().length() - 2 > 16) { // Se resta 2 para descontar el 0b
+                System.out.println("CTE_BIN excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+                throw new Error();
+            }
+            symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
+            return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext());
             } 
             // fall through
           case 74: break;

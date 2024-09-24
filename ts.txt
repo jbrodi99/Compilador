@@ -1,7 +1,10 @@
-|                   NOMBRE|     TOKEN|      TIPO|                    VALOR| LEN|
---------------------------------------------------------------------------------
-|                     _msj|        ID|          |                      msj|    |
-|                    _var1|        ID|          |                     var1|    |
-|                      _56|   CTE_INT|          |                       56|    |
-|                       _2|   CTE_INT|          |                        2|    |
-|                    _msj2|        ID|          |                     msj2|    |
+|                             NOMBRE|     TOKEN|      TIPO|                              VALOR| LEN|
+-----------------------------------------------------------------------------------------------------
+|                               _msj|        ID|          |                                msj|    |
+|   _"Esto es una archivo de prueba"|   CTE_STR|          |    "Esto es una archivo de prueba"|    |
+|                              _var1|        ID|          |                               var1|    |
+|                                _56|   CTE_INT|          |                                 56|    |
+|                                 _2|   CTE_INT|          |                                  2|    |
+|                       _"aaaaaaaaa"|   CTE_STR|          |                        "aaaaaaaaa"|    |
+|                              _msj2|        ID|          |                               msj2|    |
+|              _"Esto fue l archivo"|   CTE_STR|          |               "Esto fue l archivo"|    |
