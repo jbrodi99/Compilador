@@ -1,39 +1,63 @@
 package com.compilador.controller.editor;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
+
 //MODIFICAR CON LA LOGICA PARA MOSTRAR TABLA
 public class ShowTableAction implements ActionListener {
-    private JTextArea textArea;
+    private final String filename;
 
     // Constructor que recibe el área de texto
-    public ShowTableAction(){
-
+    public ShowTableAction(String filename){
+        this.filename = filename;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Crear un JFileChooser para que el usuario elija la ubicación de guardado
-        JFileChooser fileChooser = new JFileChooser();
-        int option = fileChooser.showSaveDialog(null);
+        //Mostrar tabla
+        BufferedReader in = null;
+        try {
+            FileReader reader = new FileReader(this.getFilename());
+            in = new BufferedReader(reader);
+            StringBuilder tabla = new StringBuilder();
+            String linea;
+            while((linea = in.readLine()) != null){
+                tabla.append(linea).append("\n");
+            }
 
-        if (option == JFileChooser.APPROVE_OPTION) {
-            // Obtener el archivo seleccionado por el usuario
-            File file = fileChooser.getSelectedFile();
+            //Crear JText Are con fuente monoespaciada
+            JTextArea textArea = new JTextArea(tabla.toString());
+            textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            textArea.setEditable(false);
 
-            // Guardar el contenido del JTextArea en el archivo
-            try (FileWriter fileWriter = new FileWriter(file)) {
-                fileWriter.write(textArea.getText());
-                fileWriter.flush();  // Asegurarse de que todo el contenido se escribe en el archivo
-                System.out.println("Archivo guardado exitosamente en: " + file.getAbsolutePath());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                System.err.println("Error al guardar el archivo: " + ex.getMessage());
+            //Mostrar en JScroll por si la tabla es muy grande
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(565,300));
+
+            //Mostrar en JOptionPane
+            JOptionPane.showMessageDialog(null,scrollPane,"Tabla de simbolos!",JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if(in != null){
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
+
+    }
+
+    private String getFilename() {
+        return this.filename;
     }
 }
