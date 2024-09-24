@@ -3,6 +3,7 @@
 package com.compilador.model;
 
 import com.compilador.model.Simbolos;
+import com.compilador.controller.lexico.TablaSimbolos;
 
 import java_cup.runtime.Symbol;
 import java_cup.sym;
@@ -375,6 +376,14 @@ public class Lexico implements java_cup.runtime.Scanner {
    * otherwise, it will have a value of 0.
    */
   private int zzFinalHighSurrogate = 0;
+
+  /* user code: */
+/**
+*   Instancia de tabla de simbolos
+*
+*/
+TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
+
 
 
   /**
@@ -768,12 +777,14 @@ public class Lexico implements java_cup.runtime.Scanner {
             // fall through
           case 44: break;
           case 2: 
-            { return new Symbol(Simbolos.CTE_INT.ordinal(), yytext());
+            { symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
+                        return new Symbol(Simbolos.CTE_INT.ordinal(), yytext());
             } 
             // fall through
           case 45: break;
           case 3: 
-            { return new Symbol(Simbolos.ID.ordinal(), yytext());
+            { symtbl.agregarSimbolo("_" + yytext(), "ID", yytext(), null);
+                        return new Symbol(Simbolos.ID.ordinal(), yytext());
             } 
             // fall through
           case 46: break;
@@ -913,7 +924,8 @@ public class Lexico implements java_cup.runtime.Scanner {
             // fall through
           case 73: break;
           case 31: 
-            { return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext());
+            { symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
+                        return new Symbol(Simbolos.CTE_BIN.ordinal(), yytext());
             } 
             // fall through
           case 74: break;
@@ -958,7 +970,8 @@ public class Lexico implements java_cup.runtime.Scanner {
             // fall through
           case 82: break;
           case 40: 
-            { return new Symbol(Simbolos.OP_DECSEC.ordinal(), yytext());
+            { symtbl.leerArchivo();
+                       return new Symbol(Simbolos.OP_DECSEC.ordinal(), yytext());
             } 
             // fall through
           case 83: break;
