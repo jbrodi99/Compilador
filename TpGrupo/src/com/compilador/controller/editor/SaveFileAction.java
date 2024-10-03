@@ -1,5 +1,7 @@
 package com.compilador.controller.editor;
 
+import com.compilador.controller.lexico.TablaSimbolos;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTextArea;
@@ -20,6 +22,9 @@ public class SaveFileAction implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // Crear un JFileChooser para que el usuario elija la ubicación de guardado
         JFileChooser fileChooser = new JFileChooser();
+        File rutaInicial = new File(".");
+        fileChooser.setCurrentDirectory(rutaInicial);
+
         int option = fileChooser.showSaveDialog(null);
 
         if (option == JFileChooser.APPROVE_OPTION) {

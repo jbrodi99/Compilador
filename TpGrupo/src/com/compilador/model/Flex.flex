@@ -92,7 +92,7 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
     {CTE_INT} {
         int valor = Integer.parseInt(yytext());
         if (valor > MAX_LEN_INT) {
-            System.out.println("CTE_INT excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+            System.out.println("CTE_INT excede el máximo de 16 bits: <" + yytext() + "> en la línea " + (yyline + 1));
             throw new Error();
         }
         symtbl.agregarSimbolo("_" + yytext(), "CTE_INT", yytext(), null);
@@ -103,7 +103,7 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
         try {
             Float valor = Float.parseFloat(yytext());
         } catch (NumberFormatException e) {
-            System.out.println("CTE_REAL excede el máximo de 32 bits: <" + yytext() + "> en la línea " + yyline);
+            System.out.println("CTE_REAL excede el máximo de 32 bits: <" + yytext() + "> en la línea " + (yyline + 1));
             throw new Error();
         }
         symtbl.agregarSimbolo("_" + yytext(), "CTE_REAL", yytext(), null);
@@ -112,7 +112,7 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 
     {CTE_STR} {
         if (yytext().length() - 2 > MAX_LEN_STR) {  // Se resta 2 para descontar las comillas
-            System.out.println("CTE_STR muy larga (máximo 30 caracteres): <" + yytext() + "> en la línea " + yyline);
+            System.out.println("CTE_STR muy larga (máximo 30 caracteres): <" + yytext() + "> en la línea " + (yyline + 1));
             throw new Error();
         }
         symtbl.agregarSimbolo("_" + yytext(), "CTE_STR", yytext(), null);
@@ -121,7 +121,7 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 
     {CTE_BIN} {
             if (yytext().length() - 2 > 16) { // Se resta 2 para descontar el 0b
-                System.out.println("CTE_BIN excede el máximo de 16 bits: <" + yytext() + "> en la línea " + yyline);
+                System.out.println("CTE_BIN excede el máximo de 16 bits: <" + yytext() + "> en la línea " + (yyline + 1));
                 throw new Error();
             }
             symtbl.agregarSimbolo("_" + yytext(), "CTE_BIN", yytext(), null);
@@ -134,4 +134,4 @@ TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 }
 
 
-[^]     { throw new Error("Caracter no permitido: <" + yytext() + "> en la línea " + yyline); }
+[^]     { throw new Error("Caracter no permitido: <" + yytext() + "> en la línea " + (yyline + 1)); }

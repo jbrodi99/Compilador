@@ -5,7 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.io.File;
 import java.nio.Buffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 //MODIFICAR CON LA LOGICA PARA MOSTRAR TABLA
 public class ShowTableAction implements ActionListener {
@@ -20,6 +24,11 @@ public class ShowTableAction implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         //Mostrar tabla
         BufferedReader in = null;
+
+        // Crea un path para verificar si existe el archivo te la tabla de símbolos
+        Path path = Paths.get(this.filename);
+        if (!Files.exists(path)) return;
+
         try {
             FileReader reader = new FileReader(this.getFilename());
             in = new BufferedReader(reader);

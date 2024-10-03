@@ -18,6 +18,10 @@ public class LoadFileAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
+
+        File rutaInicial = new File(".");
+        fileChooser.setCurrentDirectory(rutaInicial);
+
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();

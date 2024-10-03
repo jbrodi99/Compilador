@@ -2,6 +2,7 @@ package com.compilador.view;
 
 import java.awt.*;
 import javax.swing.*;
+import com.compilador.controller.editor.LineNumbering;
 import com.compilador.controller.editor.AnalyzeCodeAction;
 import com.compilador.controller.editor.LoadFileAction;
 import com.compilador.controller.editor.SaveFileAction;
@@ -14,7 +15,7 @@ public class CodeEditor extends JFrame {
 
     public CodeEditor() {
         setTitle("IDE");
-        setSize(1000, 700); // Aumentar el tamaño para acomodar el resultArea
+        setSize(1000, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -23,15 +24,19 @@ public class CodeEditor extends JFrame {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
+        // Crear un JTextArea para mostrar los números de línea
+        LineNumbering lineNumbering = new LineNumbering(textArea);
+
+        // Añadir el área de números de línea y el área de texto al JScrollPane
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setRowHeaderView(lineNumbering); // Añadir números de línea como cabecera de fila
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         // Área de texto para mostrar los resultados del análisis
         resultArea = new JTextArea();
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
-        resultArea.setEditable(false); // El área de resultados no debería ser editable
-
-        // Panel con barra de desplazamiento para el área de texto
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        resultArea.setEditable(false);
 
         // Panel con barra de desplazamiento para el área de resultados
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
@@ -43,7 +48,7 @@ public class CodeEditor extends JFrame {
 
         // Botón para analizar el código
         analyzeButton = new JButton("Analizar Código");
-        analyzeButton.addActionListener(new AnalyzeCodeAction(this.textArea,this.resultArea));
+        analyzeButton.addActionListener(new AnalyzeCodeAction(this.textArea, this.resultArea));
 
         // Botón para guardar el contenido del área de texto en un archivo
         saveButton = new JButton("Guardar Archivo");
@@ -55,11 +60,11 @@ public class CodeEditor extends JFrame {
 
         // Panel para los botones con un GridLayout
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 1, 5, 5)); // 4 filas, 1 columna, espacio entre botones
-        panel.add(loadButton); // Añadir el botón de cargar
-        panel.add(saveButton); // Añadir el botón de guardar
-        panel.add(showTableButton); // Añadir el botón de mostrar tabla
-        panel.add(analyzeButton); // Añadir el botón de analizar
+        panel.setLayout(new GridLayout(4, 1, 5, 5));
+        panel.add(loadButton);
+        panel.add(saveButton);
+        panel.add(showTableButton);
+        panel.add(analyzeButton);
 
         // Panel dividido para mostrar el código y los resultados
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, resultScrollPane);
