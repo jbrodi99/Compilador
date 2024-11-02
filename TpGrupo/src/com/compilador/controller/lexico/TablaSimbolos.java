@@ -54,7 +54,7 @@ public class TablaSimbolos {
         }
     }
 
-    public void agregarSimbolo(String nombre, String token, String valor, String len){
+    public void agregarSimbolo(String nombre, String token, String valor, Integer len){
         List<Map<COLUMNA, String>> tabla = getSymtabla();
         boolean encontrado = false;
         int i = 0;

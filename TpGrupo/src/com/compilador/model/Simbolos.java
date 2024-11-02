@@ -13,7 +13,7 @@ public enum Simbolos {
     OP_BETWEEN,
     OP_INT,
     OP_FLOAT,
-    OP_CHAR,
+    OP_STRING,
     OP_SUM,
     OP_LESS,
     OP_MUL,
