@@ -1,0 +1,91 @@
+import java_cup.runtime.*;
+
+
+parser code
+{:
+:}
+action code
+{:
+:}
+
+/* Declaracion de Terminales*/
+terminal OP_WHILE, OP_IF, OP_ELSE, OP_WRITE, OP_DECSEC, OP_ENDECSEC,
+OP_PROSEC, OP_ENDPROSEC, OP_BETWEEN, OP_INT, OP_FLOAT, OP_STRING, OP_SUM,
+OP_LESS, OP_MUL, OP_DIV, ASIGN, DECLA, PAR_OP, PAR_CL, SQR_OP,  SQR_CL,
+BRA_OP, BRA_CL, DOTCOM, COMA, MINUS, MINUS_EQ, MAY,
+MAY_EQ, EQ, NEQ, NOT, AND, OR, ID, CTE_INT, CTE_REAL, CTE_STR, CTE_BIN;
+
+/*Declaracion de no TERMINALES*/
+non terminal pgr, declaracion, variable, tipos, lista, sentencia,asignacion, while,
+if,elseif, else, write, between,cte,expresion, termino, factor, condicion, cond_op, operadorLogico;
+
+start with pgr;
+
+pgr ::= OP_DECSEC declaracion OP_ENDECSEC OP_PROSEC lista OP_ENDPROSEC {: System.out.println("pgr Regla 0 Compila correctamente llegando al simbolo Start");:};
+
+declaracion ::= SQR_OP variable DECLA tipos SQR_CL declaracion {::};
+
+variable ::= ID {::}
+            | ID COMA variable {::};
+
+tipos ::= OP_INT tipos {::}
+            | OP_FLOAT tipos {::}
+            | OP_STRING tipos {::}
+            | OP_INT {::}
+            | OP_FLOAT {::}
+            | OP_STRING {::};
+
+lista ::= sentencia {::}
+            | sentencia lista {::};
+
+sentencia ::= asignacion DOTCOM {::}
+                | while {::}
+                | if {::}
+                | write DOTCOM {::}
+                | between DOTCOM {::};
+
+asignacion ::= ID ASIGN expresion {::};
+
+while ::= OP_WHILE PAR_OP condicion PAR_CL BRA_OP lista BRA_CL {::};
+
+if ::= OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL
+ elseif else {::};
+
+elseif ::= OP_ELSE OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL elseif {::};
+
+else ::= OP_ELSE BRA_OP lista BRA_CL {::};
+
+write ::= OP_WRITE PAR_OP cte PAR_CL {::};
+
+between ::= OP_BETWEEN PAR_OP expresion COMA SQR_OP expresion DOTCOM expresion SQR_CL PAR_CL {::};
+
+cte ::= CTE_INT {::}
+        | CTE_REAL {::}
+        | CTE_STR {::}
+        | CTE_BIN {::};
+
+expresion ::= expresion OP_SUM termino {::}
+                | expresion OP_LESS termino {::}
+                | termino {::};
+
+termino ::= termino OP_MUL factor {::}
+            | termino OP_DIV factor {::}
+            | factor {::};
+
+factor ::= PAR_OP expresion PAR_CL {::}
+            | cte {::}
+            | ID {::};
+
+condicion ::= expresion cond_op expresion {::}
+                | PAR_OP condicion PAR_CL operadorLogico PAR_OP condicion PAR_CL {::};
+
+cond_op ::= EQ {::}
+            | NEQ {::}
+            | MINUS {::}
+            | MINUS_EQ {::}
+            | MAY {::}
+            | MAY_EQ {::}
+            | NOT {::};
+
+operadorLogico ::= AND {::}
+                    | OR {::};
