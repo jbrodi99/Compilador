@@ -1,25 +1,7 @@
+DECLARE.SECTION
+	[a,b,c,d]:=[INT,INT,FLOAT,INT];
+ENDDECLARE.SECTION
+
 PROGRAM.SECTION
-	DECLARE.SECTION
-		[a,b,c]:=[INT,FLOAT,CHAR];
-	ENDDECLARE.SECTION
-
-	while(25 > 15){}
-	if(25 >= 15 || 15 < 10)
-	else{}
-	WRITE "hola";
-
-	BETWEEN(a,[1; 33]);
-
-
-	//*Comentario*//
-
-	a ::= a + 2;
-	a ::= a - 2;
-	a ::= a * 2;
-	a ::= a / 2;
-
-	a ::= 25.52;
-
-	b ::= 0b11001;
-
+	a::=24;
 ENDPROGRAM.SECTION

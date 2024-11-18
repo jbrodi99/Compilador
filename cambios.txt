@@ -1,0 +1,41 @@
+Cambios: 
+- Cambié en el flex la forma que retornaban los tokens para usar sym
+	y agregué unos println para mostrar los errores en los textArea de la parte
+	gráfica.
+En  el AnalyzeCodeAction agregué otro textArea a la parte gráfica para poder
+	seguir imprimiendo el resultado de la primera entrega y poder imprimir
+	por separado la parte del sintáctico.
+Todos los cambios siguen estando en el código, están comentados.
+Cambié el tamaño de la fuente para que se viera un poco más grande.
+
+- Agregué 2 clases que encontré por internet que sirven para mostrar los println
+	directo en un textArea que recibe. Las uso para mostrar todos los resultados 
+	del TP.
+
+En TablaSimbolos agregué una función para poder actualizar un símbolo existente en la 
+	tabla de simbolos. La uso para que se actualice el TIPO que se necesitaba actualizar
+	con la parte sintáctica.
+
+El .cup modifiqué lo que habíamos hecho por lo que tenemos en el borrador que nos corrigió 
+	con las correcciones. Agregué el BETWEEN como parte de la regla "condición" (casi
+	al final del .cup) porque habiamos dicho que hacia falta agregarla pero nos 
+	olvidamos de hacerlo y la profe lo corrigió. 
+En el .cup también agregué todos los mensajes que van a salir en pantalla. Traté de 
+	hacer las salidas lo más entendible posible pero si se te ocurre algún cambio 
+	en eso mandale para adelante sin problema.
+En el .cup también agregué unas funciones para error, leer la tabla de simbolos que venía
+	de la parte lexica y para agregar los tipos de los ID. Las actualizaciones de 
+	los TIPOS solo los hice con los ID que encuentra en la parte de la DECLARACION
+	porque con los que se encuentran en la PARTE de programa no supe como identificar
+	su tipo.
+
+- El CodeEditor tiene unos pequeños cambios que son para reflejar el nuevo textArea
+	para los resultados del sintáctico.
+
+Falta: 
+- Hacer el txt de prueba completo.
+- Hacer el test para saber que todas las salidas son correctas.
+
+Aclaración:
+	El ejecutable del compilador ya está rebuildeado asi que si queres probar
+	el compilador desde ahí se puede hacer.

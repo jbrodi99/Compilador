@@ -1,11 +1,47 @@
-import java_cup.runtime.*;
+package com.compilador.model;
 
+import com.compilador.controller.lexico.TablaSimbolos;
+import java.io.IOException;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
 
 parser code
 {:
+    /*Mensaje de error*/
+    public void syntax_error(Symbol s) {
+      System.out.println("Error de sintaxis en linea " + s.right +
+      ". Simbolo: " + s.value);
+    }
+
+    public boolean readTable(TablaSimbolos ts){
+        try {
+            ts.leerArchivo();  // Esto carga los símbolos existentes en la tabla
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de símbolos: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void AddTypesTS(TablaSimbolos ts, List<String> tokenName, List<String> type){
+        boolean err = false;
+        for(int i = 0; i < tokenName.size(); i++){
+            if(!ts.actualizarSimbolo("_" + tokenName.get(i), type.get(i))){
+                System.out.println("Error de actualizacion en la tabla de simbolos");
+                err = true;
+            }
+        }
+        ts.escribirArchivo(ts.getSymtabla(), false);
+        if(!err) System.out.println("Actualizacion en la tabla de simbolos Correcta");
+    }
 :}
 action code
 {:
+    TablaSimbolos tabla = new TablaSimbolos("ts.txt");
+    List<String> listaID = new ArrayList<>();
+    List<String> listaTipos = new ArrayList<>();
 :}
 
 /* Declaracion de Terminales*/
@@ -16,76 +52,246 @@ BRA_OP, BRA_CL, DOTCOM, COMA, MINUS, MINUS_EQ, MAY,
 MAY_EQ, EQ, NEQ, NOT, AND, OR, ID, CTE_INT, CTE_REAL, CTE_STR, CTE_BIN;
 
 /*Declaracion de no TERMINALES*/
-non terminal pgr, declaracion, variable, tipos, lista, sentencia,asignacion, while,
-if,elseif, else, write, between,cte,expresion, termino, factor, condicion, cond_op, operadorLogico;
+non terminal pgr, declaraciones, programa, sentencias_print, lista_print, print, declare, variable_tipos, tipos, lista,
+sentencia, asignacion, while, if, write, between, expresion, condicion, else, cte, termino, factor, comparacion,
+condicion_logica;
 
 start with pgr;
 
-pgr ::= OP_DECSEC declaracion OP_ENDECSEC OP_PROSEC lista OP_ENDPROSEC {: System.out.println("pgr Regla 0 Compila correctamente llegando al simbolo Start");:};
+/*
+    Regla 0 Sector de declaraciones y sector de programa y
+    Regla 1 Lista de prints sin ningún sector
+*/
+pgr ::= declaraciones programa
+            {:
+                System.out.println("[Regla 0] Compilacion exitosa llegando al simbolo Start: Se detectaron declaraciones y programa.");
+                if(readTable(tabla)){
+                    Collections.reverse(listaTipos);
+                    AddTypesTS(tabla, listaID, listaTipos);
+                }
+            :}
+        | sentencias_print
+            {: System.out.println("[Regla 1] Compilacion exitosa llegando al simbolo Start: Se detectaron solo sentencias de impresión."); :};
 
-declaracion ::= SQR_OP variable DECLA tipos SQR_CL declaracion {::};
+/*
+    Regla 2 Sentencias de prints
+*/
+sentencias_print ::= lista_print {: System.out.println("[Regla 2] Sector sentencias para imprimir detectado"); :};
 
-variable ::= ID {::}
-            | ID COMA variable {::};
+/*
+    Regla 3 Lista de prints;
+    Regla 4 Print;
+*/
+lista_print ::= lista_print print DOTCOM {::}
+                | print DOTCOM {::};
 
-tipos ::= OP_INT tipos {::}
-            | OP_FLOAT tipos {::}
-            | OP_STRING tipos {::}
-            | OP_INT {::}
-            | OP_FLOAT {::}
-            | OP_STRING {::};
+/*
+    Regla 5 WRITE "STRING"
+*/
+print ::= OP_WRITE CTE_STR:str {: System.out.println("[Regla 5] PRINT encontrado: " + str); RESULT = str; :};
 
-lista ::= sentencia {::}
-            | sentencia lista {::};
+/*
+    Regla 6 Sector de declaracion
+    DECLARE.SECTION
+        Declaraciones
+    ENDDECLARE.SECTION
+*/
+declaraciones ::= OP_DECSEC declare OP_ENDECSEC {: System.out.println("[Regla 6] Sector DECLARACION detectado"); :};
 
-sentencia ::= asignacion DOTCOM {::}
-                | while {::}
-                | if {::}
-                | write DOTCOM {::}
-                | between DOTCOM {::};
+/*
+    Regla 7 Lista de declaraciones
+        []:=[];
+        []:=[];
+        []:=[];
+    Regla 8 Declaracion
+        []:=[];
+*/
+declare ::= declare SQR_OP variable_tipos SQR_CL DOTCOM {::}
+            | SQR_OP variable_tipos SQR_CL DOTCOM {::};
 
-asignacion ::= ID ASIGN expresion {::};
+/*
+    Regla 9 Multiples ID y TIPOS
+        ID, ID, ... , TIPO, TIPO
+    Regla 10 Cierre de declaracion
+        ID] := [TIPO
+*/
+variable_tipos ::= ID:id COMA variable_tipos COMA tipos:t
+                {:
+                    System.out.println("[Regla 9] ID encontrado: " + id);
+                    RESULT = id;
+                    listaID.add(id.toString());
+                    listaTipos.add(t.toString());
+                :}
+                | ID:id SQR_CL DECLA SQR_OP tipos:t
+                {:
+                    System.out.println("[Regla 10] ID encontrado: " + id);
+                    RESULT = id;
+                    listaID.add(id.toString());
+                    listaTipos.add(t.toString());
+                :};
 
+/*
+    Regla 11 TIPO ENTERO
+    Regla 12 TIPO FLOAT
+    Regla 13 TIPO STRING
+*/
+tipos ::= OP_INT:oint {: System.out.println("[Regla 11] Tipo INT encontrado: " + oint); RESULT = oint; :}
+          | OP_FLOAT:ofloat {: System.out.println("[Regla 12] Tipo FLOAT encontrado: " + ofloat); RESULT = ofloat; :}
+          | OP_STRING:str {: System.out.println("[Regla 13] Tipo STR encontrado: " + str); RESULT = str; :};
+
+/*
+    Regla 14 Sector de Programa
+    PROGRAM.SECTION
+        Sentencias
+    ENDPROGRAM.SECTION
+*/
+programa ::= OP_PROSEC lista OP_ENDPROSEC {: System.out.println("[Regla 14] Sector PROGRAMA detectado"); :};
+
+/*
+    Regla 15 Lista de sentencias
+        Sentencia 1
+        Sentencia 2
+        Sentencia n
+    Regla 16 Sentencia Final
+*/
+lista ::= lista sentencia {::}
+            | sentencia {::};
+
+/*
+    Regla 17 Sentencia ASIGNACION
+    Regla 18 Sentencia WHILE
+    Regla 19 Sentencia IF
+    Regla 20 Sentencia WRITE
+    Regla 21 Sentencia BETWEEN
+*/
+sentencia ::= asignacion {: System.out.println("[Regla 17] Sentencia ASIGNACION detectada"); :}
+                | while {: System.out.println("[Regla 18] Sentencia WHILE detectada"); :}
+                | if {: System.out.println("[Regla 19] Sentencia IF detectada"); :}
+                | write {: System.out.println("[Regla 20] Sentencia WRITE detectada"); :}
+                | between {: System.out.println("[Regla 21] Sentencia BETWEEN detectada"); :};
+
+/*
+    Regla 22 Asignacion
+        ID ::= expresion;
+*/
+asignacion ::= ID ASIGN expresion DOTCOM {::};
+
+/*
+    Regla 23 While
+        While( Condicion ){ Sentencias }
+*/
 while ::= OP_WHILE PAR_OP condicion PAR_CL BRA_OP lista BRA_CL {::};
 
-if ::= OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL
- elseif else {::};
+/*
+    Regla 24 IF ELSE
+        if( Condicion ) { Sentencias }
+        else { Sentencias }
+    Regla 25 IF
+        if( Condicion ) { Sentencias }
+*/
+if ::= OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL else {::}
+       | OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL {::};
 
-elseif ::= OP_ELSE OP_IF PAR_OP condicion PAR_CL BRA_OP lista BRA_CL elseif {::};
+/*
+    Regla 26 ELSE
+        else { Sentencias }
+    Regla 27 ELSE IF
+        else if ( Condicion ) { Sentencias }
+*/
+else ::= OP_ELSE BRA_OP lista BRA_CL {: System.out.println("[Regla 26] Sentencia ELSE detectada"); :}
+        | OP_ELSE if {: System.out.println("[Regla 27] Sentencia ELSE IF detectada"); :} ;
 
-else ::= OP_ELSE BRA_OP lista BRA_CL {::};
+/*
+    Regla 28 WRITE
+        WRITE Constante;
+*/
+write ::= OP_WRITE PAR_OP cte PAR_CL DOTCOM {::};
 
-write ::= OP_WRITE PAR_OP cte PAR_CL {::};
+/*
+    Regla 29 BETWEEN
+        BETWEEN (Expresion, [Expresion; Expresion]);
+*/
+between ::= OP_BETWEEN PAR_OP expresion COMA SQR_OP expresion DOTCOM expresion SQR_CL PAR_CL DOTCOM
+            {::};
 
-between ::= OP_BETWEEN PAR_OP expresion COMA SQR_OP expresion DOTCOM expresion SQR_CL PAR_CL {::};
+/*
+Constante puede ser:
+    Regla 30 CONSTANTE ENTERA
+    Regla 31 CONSTANTE REAL
+    Regla 32 CONSTANTE STRING
+    Regla 33 CONSTANTE BINARIA
+*/
+cte ::= CTE_INT:cint {: System.out.println("[Regla 30] Constante INT encontrada: " + cint); RESULT = cint; :}
+        | CTE_REAL:real {: System.out.println("[Regla 31] Constante REAL encontrada: " + real); RESULT = real; :}
+        | CTE_STR:str {: System.out.println("[Regla 32] Constante STR encontrada: " + str); RESULT = str; :}
+        | CTE_BIN:bin {: System.out.println("[Regla 33] Constante BINARIA encontrada: " + bin); RESULT = bin; :};
 
-cte ::= CTE_INT {::}
-        | CTE_REAL {::}
-        | CTE_STR {::}
-        | CTE_BIN {::};
+/*
+Expresion puede ser:
+    Regla 34 EXPRESION + TERMINO
+    Regla 35 EXPRESION - TERMINO
+    Regla 36 TERMINO
+*/
+expresion ::= expresion OP_SUM termino {: System.out.println("[Regla 34] EXPRESION + TERMINO"); :}
+                | expresion OP_LESS termino {: System.out.println("[Regla 35] EXPRESION - TERMINO"); :}
+                | termino {: System.out.println("[Regla 36] TERMINO detectado"); :};
 
-expresion ::= expresion OP_SUM termino {::}
-                | expresion OP_LESS termino {::}
-                | termino {::};
+/*
+Termino puede ser:
+    Regla 37 TERMINO * FACTOR
+    Regla 38 TERMINO / FACTOR
+    Regla 39 FACTOR
+*/
+termino ::= termino OP_MUL factor {: System.out.println("[Regla 37] TERMINO * FACTOR"); :}
+            | termino OP_DIV factor {: System.out.println("[Regla 38] TERMINO / FACTOR"); :}
+            | factor {: System.out.println("[Regla 39] FACTOR detectado"); :};
 
-termino ::= termino OP_MUL factor {::}
-            | termino OP_DIV factor {::}
-            | factor {::};
+/*
+Factor puede ser:
+    Regla 40 (Expresion)
+    Regla 41 CONSTANTE BINARIA
+    Regla 42 CONSTANTE ENTERA
+    Regla 43 CONSTANTE REAL
+    Regla 44 ID
+*/
+factor ::= PAR_OP expresion PAR_CL {: System.out.println("[Regla 40] FACTOR "); :}
+            | CTE_BIN:bin {: System.out.println("[Regla 41] CTE BIN encontrada: " + bin); RESULT = bin; :}
+            | CTE_INT:cint {: System.out.println("[Regla 42] CTE INT encontrada: " + cint); RESULT = cint; :}
+            | CTE_REAL:real {: System.out.println("[Regla 43] CTE REAL encontrada: " + real); RESULT = real; :}
+            | ID:id {: System.out.println("[Regla 44] ID encontrado: " + id); RESULT = id; :};
 
-factor ::= PAR_OP expresion PAR_CL {::}
-            | cte {::}
-            | ID {::};
+/*
+Condicion logica puede ser:
+    Regla 45 EXPRESION Comparador_Logico EXPRESION
+*/
+condicion_logica ::= expresion comparacion expresion {::};
 
-condicion ::= expresion cond_op expresion {::}
-                | PAR_OP condicion PAR_CL operadorLogico PAR_OP condicion PAR_CL {::};
+/*
+Condicion puede ser:
+    Regla 46 ( Condicion_logica ) && ( Condicion_logica )
+    Regla 47 ( Condicion_logica ) || ( Condicion_logica )
+    Regla 48 ( Condicion_logica )
+    Regla 49 BETWEEN
+*/
+condicion ::= PAR_OP condicion_logica PAR_CL AND PAR_OP condicion_logica PAR_CL
+                    {: System.out.println("[Regla 46] CONDICION AND detectada"); :}
+              | PAR_OP condicion_logica PAR_CL OR PAR_OP condicion_logica PAR_CL
+                    {: System.out.println("[Regla 47] CONDICION OR detectada"); :}
+              | condicion_logica {: System.out.println("[Regla 48] CONDICION LOGICA detectada"); :}
+              | between {: System.out.println("[Regla 49] CONDICION BETWEEN detectada"); :};
 
-cond_op ::= EQ {::}
-            | NEQ {::}
-            | MINUS {::}
-            | MINUS_EQ {::}
-            | MAY {::}
-            | MAY_EQ {::}
-            | NOT {::};
-
-operadorLogico ::= AND {::}
-                    | OR {::};
+/*
+Simbolos de comparacion:
+    Regla 50 ==
+    Regla 51 !=
+    Regla 52 <
+    Regla 53 >
+    Regla 54 <=
+    Regla 55 >=
+*/
+comparacion ::= EQ:eq {: System.out.println("[Regla 50] Comparador IGUAL encontrado : " + eq); RESULT = eq; :}
+                | NEQ:neq {: System.out.println("[Regla 51] Comparador NO IGUAL encontrado : " + neq); RESULT = neq; :}
+                | MINUS:minus {: System.out.println("[Regla 52] Comparador MENOR QUE encontrado : " + minus); RESULT = minus; :}
+                | MAY:may {: System.out.println("[Regla 53] Comparador MAYOR QUE encontrado : " + may); RESULT = may; :}
+                | MINUS_EQ:minus_eq {: System.out.println("[Regla 54] Comparador MENOR O IGUAL encontrado : " + minus_eq); RESULT = minus_eq; :}
+                | MAY_EQ:may_eq {: System.out.println("[Regla 55] Comparador MAYOR O IGUAL encontrado : " + may_eq); RESULT = may_eq; :};

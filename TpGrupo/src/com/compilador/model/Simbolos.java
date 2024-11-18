@@ -1,7 +1,6 @@
 package com.compilador.model;
 
 public enum Simbolos {
-    EOF,
     OP_WHILE,
     OP_IF,
     OP_ELSE,
@@ -27,9 +26,7 @@ public enum Simbolos {
     BRA_OP,
     BRA_CL,
     DOTCOM,
-    DOT,
     COMA,
-    DOUBLEDOT,
     MINUS,
     MINUS_EQ,
     MAY,
@@ -43,6 +40,7 @@ public enum Simbolos {
     CTE_INT,
     CTE_REAL,
     CTE_STR,
-    CTE_BIN;
+    CTE_BIN,
+    EOF;
 }
 

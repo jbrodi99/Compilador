@@ -72,6 +72,27 @@ public class TablaSimbolos {
         }
     }
 
+    public boolean actualizarSimbolo(String nombre, String tipo) {
+        List<Map<COLUMNA, String>> tabla = getSymtabla();
+        boolean encontrado = false;
+        int i = 0;
+
+        // Buscar el símbolo por nombre
+        while (!encontrado && i < tabla.size()) {
+            Map<COLUMNA, String> linea = tabla.get(i++);
+            if (linea.get(COLUMNA.NOMBRE).equals(nombre)) {
+                // Si el símbolo se encuentra, actualizar los campos
+                if (tipo != null) {
+                    linea.put(COLUMNA.TIPO, tipo);  // Actualizar tipo
+                }
+                encontrado = true;
+                this.escribirArchivo(Arrays.asList(linea), false);  // Escribir en el archivo de nuevo
+            }
+        }
+
+        return encontrado;
+    }
+
     public boolean escribirArchivo(List<Map<COLUMNA, String>> filas, boolean append){
 
             PrintWriter out = null;

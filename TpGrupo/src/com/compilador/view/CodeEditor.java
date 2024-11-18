@@ -10,8 +10,10 @@ import com.compilador.controller.editor.ShowTableAction;
 
 public class CodeEditor extends JFrame {
     private JTextArea textArea;
-    private JTextArea resultArea;
+    private JTextArea resultLexicalArea;
+    private JTextArea resultSyntacticArea;
     private JButton loadButton, analyzeButton, saveButton, showTableButton;
+
 
     public CodeEditor() {
         setTitle("IDE");
@@ -23,6 +25,8 @@ public class CodeEditor extends JFrame {
         textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        // Si se desea modificar la fuente o el tamaño de la fuente usar esto
+        textArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
         // Crear un JTextArea para mostrar los números de línea
         LineNumbering lineNumbering = new LineNumbering(textArea);
@@ -32,15 +36,27 @@ public class CodeEditor extends JFrame {
         scrollPane.setRowHeaderView(lineNumbering); // Añadir números de línea como cabecera de fila
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Área de texto para mostrar los resultados del análisis
-        resultArea = new JTextArea();
-        resultArea.setLineWrap(true);
-        resultArea.setWrapStyleWord(true);
-        resultArea.setEditable(false);
+        // Áreas de texto para mostrar los resultados léxicos y sintácticos
+        resultLexicalArea = new JTextArea();
+        resultLexicalArea.setLineWrap(true);
+        resultLexicalArea.setWrapStyleWord(true);
+        resultLexicalArea.setEditable(false);
 
-        // Panel con barra de desplazamiento para el área de resultados
-        JScrollPane resultScrollPane = new JScrollPane(resultArea);
-        resultScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        resultSyntacticArea = new JTextArea();
+        resultSyntacticArea.setLineWrap(true);
+        resultSyntacticArea.setWrapStyleWord(true);
+        resultSyntacticArea.setEditable(false);
+
+        // Panel con barras de desplazamiento para cada área de resultados
+        JScrollPane lexicalScrollPane = new JScrollPane(resultLexicalArea);
+        lexicalScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        JScrollPane syntacticScrollPane = new JScrollPane(resultSyntacticArea);
+        syntacticScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        // Panel dividido para los resultados léxicos y sintácticos
+        JSplitPane resultSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lexicalScrollPane, syntacticScrollPane);
+        resultSplitPane.setDividerLocation(350); // Ajusta la ubicación del divisor
 
         // Botón para cargar un archivo
         loadButton = new JButton("Cargar Archivo");
@@ -48,14 +64,14 @@ public class CodeEditor extends JFrame {
 
         // Botón para analizar el código
         analyzeButton = new JButton("Analizar Código");
-        analyzeButton.addActionListener(new AnalyzeCodeAction(this.textArea, this.resultArea));
+        analyzeButton.addActionListener(new AnalyzeCodeAction(this.textArea, this.resultLexicalArea, this.resultSyntacticArea));
 
         // Botón para guardar el contenido del área de texto en un archivo
         saveButton = new JButton("Guardar Archivo");
         saveButton.addActionListener(new SaveFileAction(this.textArea));
 
         // Botón para mostrar una tabla
-        showTableButton = new JButton("Mostrar Tabla de Simbolos");
+        showTableButton = new JButton("Mostrar Tabla de Símbolos");
         showTableButton.addActionListener(new ShowTableAction("ts.txt"));
 
         // Panel para los botones con un GridLayout
@@ -66,9 +82,9 @@ public class CodeEditor extends JFrame {
         panel.add(showTableButton);
         panel.add(analyzeButton);
 
-        // Panel dividido para mostrar el código y los resultados
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, resultScrollPane);
-        splitPane.setDividerLocation(500);
+        // Panel dividido principal para mostrar el código y los resultados
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, resultSplitPane);
+        splitPane.setDividerLocation(500); // Ajusta la ubicación del divisor principal
 
         // Añadir los componentes al marco
         getContentPane().add(splitPane, BorderLayout.CENTER);
