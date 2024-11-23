@@ -354,8 +354,6 @@ public class Lexico implements java_cup.runtime.Scanner {
 */
 TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 
-boolean enDeclaracion = false;
-boolean enPrograma = false;
 
 
 
@@ -762,7 +760,7 @@ boolean enPrograma = false;
             // fall through
           case 44: break;
           case 3: 
-            { symtbl.agregarSimbolo("_" + yytext(), "ID", null, null);
+            { symtbl.agregarSimbolo(yytext(), "ID", null, null);
                          return new Symbol(sym.ID, yytext());
             } 
             // fall through
@@ -909,12 +907,7 @@ boolean enPrograma = false;
             // fall through
           case 68: break;
           case 27: 
-            { if(enDeclaracion){
-                 return new Symbol(sym.DECLA, yytext());
-             }else{
-                 System.out.println("Declaracion fuera de la seccion en la línea " + (yyline + 1));
-                 throw new Error("Declaracion fuera de la seccion en la línea " + (yyline + 1));
-             }
+            { return new Symbol(sym.DECLA, yytext());
             } 
             // fall through
           case 69: break;
@@ -979,42 +972,23 @@ boolean enPrograma = false;
             // fall through
           case 80: break;
           case 39: 
-            { enDeclaracion = true;
-             symtbl.leerArchivo();
-             return new Symbol(sym.OP_DECSEC, yytext());
+            { symtbl.leerArchivo();
+          return new Symbol(sym.OP_DECSEC, yytext());
             } 
             // fall through
           case 81: break;
           case 40: 
-            { if(enDeclaracion){
-                 System.out.println("Seccion de PROGRAMA dentro del area de DECLARACION en la línea " + (yyline + 1));
-                 throw new Error("Seccion de PROGRAMA dentro del area de DECLARACION en la línea " + (yyline + 1));
-             }else{
-                 enPrograma = true;
-                 return new Symbol(sym.OP_PROSEC, yytext());
-             }
+            { return new Symbol(sym.OP_PROSEC, yytext());
             } 
             // fall through
           case 82: break;
           case 41: 
-            { if(!enDeclaracion){
-                 System.out.println("Cierre de DECLARACION sin una seccion de apertura en la linea " + (yyline + 1));
-                 throw new Error("Cierre de DECLARACION sin una seccion de apertura en la linea " + (yyline + 1));
-             }else{
-                 enDeclaracion = false;  // Salimos de sección de declaraciones
-                 return new Symbol(sym.OP_ENDECSEC, yytext());
-             }
+            { return new Symbol(sym.OP_ENDECSEC, yytext());
             } 
             // fall through
           case 83: break;
           case 42: 
-            { if(!enPrograma){
-                 System.out.println("Cierra de DECLARACION sin una seccion de apertura en la línea " + (yyline + 1));
-                 throw new Error("Cierra de DECLARACION sin una seccion de apertura en la línea " + (yyline + 1));
-             }else{
-                 enPrograma = false;
-                 return new Symbol(sym.OP_ENDPROSEC, yytext());
-             }
+            { return new Symbol(sym.OP_ENDPROSEC, yytext());
             } 
             // fall through
           case 84: break;

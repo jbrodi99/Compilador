@@ -160,9 +160,6 @@ public class AnalyzeCodeAction implements ActionListener {
             // Ejecutar el parser y capturar el resultado
             Symbol parseResult = parser.parse();
             System.out.println("Analisis sintactico completado sin errores."); // Salida a synOutput
-
-            // Imprimir detalles adicionales del resultado del parser
-            System.out.println("Resultado del parser: " + parseResult.value); // Salida a synOutput
         } catch (Exception ex) {
             System.out.println("Error durante el analisis sintactico"); // Salida a synOutput
         } finally {

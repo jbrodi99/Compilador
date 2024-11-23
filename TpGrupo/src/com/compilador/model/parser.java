@@ -297,7 +297,6 @@ public class parser extends java_cup.runtime.lr_parser {
     public boolean readTable(TablaSimbolos ts){
         try {
             ts.leerArchivo();  // Esto carga los símbolos existentes en la tabla
-            System.out.println("Tabla cargada");
             return true;
         } catch (IOException e) {
             System.out.println("Error al leer el archivo de símbolos: " + e.getMessage());
@@ -308,7 +307,7 @@ public class parser extends java_cup.runtime.lr_parser {
     public void AddTypesTS(TablaSimbolos ts, List<String> tokenName, List<String> type){
         boolean err = false;
         for(int i = 0; i < tokenName.size(); i++){
-            if(!ts.actualizarSimbolo("_" + tokenName.get(i), type.get(i))){
+            if(!ts.actualizarSimbolo(tokenName.get(i), type.get(i))){
                 System.out.println("Error de actualizacion en la tabla de simbolos");
                 err = true;
             }
@@ -323,9 +322,15 @@ public class parser extends java_cup.runtime.lr_parser {
 class CUP$parser$actions {
 
 
+    // Tabla de simbolos del compilador
     TablaSimbolos tabla = new TablaSimbolos("ts.txt");
-    List<String> listaID = new ArrayList<>();
-    List<String> listaTipos = new ArrayList<>();
+    // Lista que va a almacenar todos los ids que se declaren en la seccion de declaracion
+    List<String> listIDs = new ArrayList<>();
+    // Lista que va a almacenar los ids de cada linea de la seccion de declaracion
+    // Se va a limpiar cada vez que termine la declaracion
+    List<String> invertList = new ArrayList<>();
+    // Lista que va a almacenar los tipos de cada linea de la seccion de declaracion
+    List<String> listTypes = new ArrayList();
 
   private final parser parser;
 
@@ -368,9 +373,10 @@ class CUP$parser$actions {
               Object RESULT =null;
 		
                 System.out.println("[Regla 0] Compilacion exitosa llegando al simbolo Start: Se detectaron declaraciones y programa.");
+                // Se lee la tabla que se creo en la seccion lexica del compilador
                 if(readTable(tabla)){
-                    Collections.reverse(listaTipos);
-                    AddTypesTS(tabla, listaID, listaTipos);
+                    // Se le agregan los tipos que se leyeron a todos los ids
+                    AddTypesTS(tabla, listIDs, listTypes);
                 }
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("pgr",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -439,6 +445,13 @@ class CUP$parser$actions {
             {
               Object RESULT =null;
 		
+                // Se invierte la lista auxiliar con los ids actuales
+                Collections.reverse(invertList);
+                // Se concatena la lista auxiliar a la lista donde se van a almacenar todos los ids
+                listIDs.addAll(invertList);
+                // Se vacia la lista auxiliar para volver a empezar si hay otra sentencia de declaracion
+                invertList.clear();
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declare",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -448,6 +461,13 @@ class CUP$parser$actions {
             {
               Object RESULT =null;
 		
+                // Se invierte la lista auxiliar con los ids actuales
+                Collections.reverse(invertList);
+                // Se concatena la lista auxiliar a la lista donde se van a almacenar todos los ids
+                listIDs.addAll(invertList);
+                // Se vacia la lista auxiliar para volver a empezar si hay otra sentencia de declaracion
+                invertList.clear();
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declare",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -465,8 +485,10 @@ class CUP$parser$actions {
 		
                     System.out.println("[Regla 9] ID encontrado: " + id);
                     RESULT = id;
-                    listaID.add(id.toString());
-                    listaTipos.add(t.toString());
+                    // Se agrega el id encontrado en la lista auxiliar de ids
+                    invertList.add(id.toString());
+                    // Se agrega el tipo encontrado en la lista de tipos
+                    listTypes.add(t.toString());
                 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("variable_tipos",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -485,8 +507,10 @@ class CUP$parser$actions {
 		
                     System.out.println("[Regla 10] ID encontrado: " + id);
                     RESULT = id;
-                    listaID.add(id.toString());
-                    listaTipos.add(t.toString());
+                    // Se agrega el id encontrado en la lista auxiliar de ids
+                    invertList.add(id.toString());
+                    // Se agrega el tipo encontrado en la lista de tipos
+                    listTypes.add(t.toString());
                 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("variable_tipos",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -604,7 +628,10 @@ class CUP$parser$actions {
           case 23: // asignacion ::= ID ASIGN expresion DOTCOM 
             {
               Object RESULT =null;
-		
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Object id = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		 System.out.println("[Regla 21] ID en asignacion: " + id); RESULT = id; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -742,7 +769,7 @@ class CUP$parser$actions {
           case 37: // expresion ::= termino 
             {
               Object RESULT =null;
-		 System.out.println("[Regla 36] TERMINO detectado"); 
+		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("expresion",16, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -769,7 +796,7 @@ class CUP$parser$actions {
           case 40: // termino ::= factor 
             {
               Object RESULT =null;
-		 System.out.println("[Regla 39] FACTOR detectado"); 
+		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("termino",20, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -883,7 +910,7 @@ class CUP$parser$actions {
 		int eqleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int eqright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object eq = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 50] Comparador IGUAL encontrado : " + eq); RESULT = eq; 
+		 System.out.println("[Regla 50] Comparador IGUAL encontrado: " + eq); RESULT = eq; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -895,7 +922,7 @@ class CUP$parser$actions {
 		int neqleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int neqright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object neq = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 51] Comparador NO IGUAL encontrado : " + neq); RESULT = neq; 
+		 System.out.println("[Regla 51] Comparador NO IGUAL encontrado: " + neq); RESULT = neq; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -907,7 +934,7 @@ class CUP$parser$actions {
 		int minusleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int minusright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object minus = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 52] Comparador MENOR QUE encontrado : " + minus); RESULT = minus; 
+		 System.out.println("[Regla 52] Comparador MENOR QUE encontrado: " + minus); RESULT = minus; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -919,7 +946,7 @@ class CUP$parser$actions {
 		int mayleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int mayright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object may = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 53] Comparador MAYOR QUE encontrado : " + may); RESULT = may; 
+		 System.out.println("[Regla 53] Comparador MAYOR QUE encontrado: " + may); RESULT = may; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -931,7 +958,7 @@ class CUP$parser$actions {
 		int minus_eqleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int minus_eqright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object minus_eq = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 54] Comparador MENOR O IGUAL encontrado : " + minus_eq); RESULT = minus_eq; 
+		 System.out.println("[Regla 54] Comparador MENOR O IGUAL encontrado: " + minus_eq); RESULT = minus_eq; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -943,7 +970,7 @@ class CUP$parser$actions {
 		int may_eqleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int may_eqright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object may_eq = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("[Regla 55] Comparador MAYOR O IGUAL encontrado : " + may_eq); RESULT = may_eq; 
+		 System.out.println("[Regla 55] Comparador MAYOR O IGUAL encontrado: " + may_eq); RESULT = may_eq; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("comparacion",22, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

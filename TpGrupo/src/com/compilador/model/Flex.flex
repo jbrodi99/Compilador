@@ -41,8 +41,6 @@ COMMENT = "//*"({LETRA}|{NUMERO}|{ESPACIO}|{SYMBOL})*"*//"
 */
 TablaSimbolos symtbl = new TablaSimbolos("ts.txt");
 
-boolean enDeclaracion = false;
-boolean enPrograma = false;
 
 %}
 
@@ -188,38 +186,13 @@ boolean enPrograma = false;
      "else"          { return new Symbol(sym.OP_ELSE, yytext()); }
      "WRITE"         { return new Symbol(sym.OP_WRITE, yytext()); }
      "DECLARE.SECTION" {
-             enDeclaracion = true;
-             symtbl.leerArchivo();
-             return new Symbol(sym.OP_DECSEC, yytext());
-         }
-     "ENDDECLARE.SECTION" {
-             if(!enDeclaracion){
-                 System.out.println("Cierre de DECLARACION sin una seccion de apertura en la linea " + (yyline + 1));
-                 throw new Error("Cierre de DECLARACION sin una seccion de apertura en la linea " + (yyline + 1));
-             }else{
-                 enDeclaracion = false;  // Salimos de sección de declaraciones
-                 return new Symbol(sym.OP_ENDECSEC, yytext());
-             }
-         }
+          symtbl.leerArchivo();
+          return new Symbol(sym.OP_DECSEC, yytext());
+      }
+     "ENDDECLARE.SECTION" { return new Symbol(sym.OP_ENDECSEC, yytext()); }
 
-     "PROGRAM.SECTION" {
-             if(enDeclaracion){
-                 System.out.println("Seccion de PROGRAMA dentro del area de DECLARACION en la línea " + (yyline + 1));
-                 throw new Error("Seccion de PROGRAMA dentro del area de DECLARACION en la línea " + (yyline + 1));
-             }else{
-                 enPrograma = true;
-                 return new Symbol(sym.OP_PROSEC, yytext());
-             }
-          }
-     "ENDPROGRAM.SECTION" {
-             if(!enPrograma){
-                 System.out.println("Cierra de DECLARACION sin una seccion de apertura en la línea " + (yyline + 1));
-                 throw new Error("Cierra de DECLARACION sin una seccion de apertura en la línea " + (yyline + 1));
-             }else{
-                 enPrograma = false;
-                 return new Symbol(sym.OP_ENDPROSEC, yytext());
-             }
-          }
+     "PROGRAM.SECTION" { return new Symbol(sym.OP_PROSEC, yytext()); }
+     "ENDPROGRAM.SECTION" { return new Symbol(sym.OP_ENDPROSEC, yytext()); }
      "BETWEEN"       { return new Symbol(sym.OP_BETWEEN, yytext()); }
      "INT"           { return new Symbol(sym.OP_INT, yytext()); }
      "FLOAT"         { return new Symbol(sym.OP_FLOAT, yytext()); }
@@ -230,14 +203,7 @@ boolean enPrograma = false;
      "*"             { return new Symbol(sym.OP_MUL, yytext()); }
      "/"             { return new Symbol(sym.OP_DIV, yytext()); }
      "::="           { return new Symbol(sym.ASIGN, yytext()); }
-     ":="            {
-             if(enDeclaracion){
-                 return new Symbol(sym.DECLA, yytext());
-             }else{
-                 System.out.println("Declaracion fuera de la seccion en la línea " + (yyline + 1));
-                 throw new Error("Declaracion fuera de la seccion en la línea " + (yyline + 1));
-             }
-     }
+     ":="            { return new Symbol(sym.DECLA, yytext()); }
 
      "("             { return new Symbol(sym.PAR_OP, yytext()); }
      ")"             { return new Symbol(sym.PAR_CL, yytext()); }
@@ -257,7 +223,7 @@ boolean enPrograma = false;
      "&&"            { return new Symbol(sym.AND, yytext()); }
      "||"            { return new Symbol(sym.OR, yytext()); }
 
-     {ID}            {   symtbl.agregarSimbolo("_" + yytext(), "ID", null, null);
+     {ID}            {   symtbl.agregarSimbolo(yytext(), "ID", null, null);
                          return new Symbol(sym.ID, yytext()); }
      {CTE_INT} {
 

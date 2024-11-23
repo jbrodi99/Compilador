@@ -1,7 +1,17 @@
 |                             NOMBRE|     TOKEN|      TIPO|                              VALOR| LEN|
 ----------------------------------------------------------------------------------------------------
-|                                 _a|        ID|          |                                   |    |
-|                                 _b|        ID|          |                                   |    |
-|                                 _c|        ID|          |                                   |    |
-|                                 _d|        ID|          |                                   |    |
-|                                _24|   CTE_INT|          |                                 24|    |
+|                                  a|        ID|       INT|                                   |    |
+|                                  b|        ID|       INT|                                   |    |
+|                                  c|        ID|     FLOAT|                                   |    |
+|                                  d|        ID|       INT|                                   |    |
+|                                  x|        ID|    STRING|                                   |    |
+|                                  w|        ID|       INT|                                   |    |
+|                                  y|        ID|    STRING|                                   |    |
+|                                  z|        ID|     FLOAT|                                   |    |
+|                                 _1|   CTE_INT|          |                                  1|    |
+|                                _10|   CTE_INT|          |                                 10|    |
+|                          _"a es 1"|   CTE_STR|          |                           "a es 1"|   6|
+|                                 _2|   CTE_INT|          |                                  2|    |
+|                          _"a es 2"|   CTE_STR|          |                           "a es 2"|   6|
+|                  _"a es mayor a 2"|   CTE_STR|          |                   "a es mayor a 2"|  14|
+|                              _3.14|  CTE_REAL|          |                               3.14|    |
