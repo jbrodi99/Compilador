@@ -304,7 +304,8 @@ condicion ::= PAR_OP condicion_logica PAR_CL AND PAR_OP condicion_logica PAR_CL
               | PAR_OP condicion_logica PAR_CL OR PAR_OP condicion_logica PAR_CL
                     {: System.out.println("[Regla 48] CONDICION OR detectada"); :}
               | condicion_logica {: System.out.println("[Regla 49] CONDICION LOGICA detectada"); :}
-              | between {: System.out.println("[Regla 50] CONDICION BETWEEN detectada"); :};
+              | NOT condicion {: System.out.println("[Regla 50] CONDICION NEGADA detectada"); :}
+              | between {: System.out.println("[Regla 51] CONDICION BETWEEN detectada"); :};
 
 /*
 Simbolos de comparacion:
@@ -315,9 +316,9 @@ Simbolos de comparacion:
     Regla 54 <=
     Regla 55 >=
 */
-comparacion ::= EQ:eq {: System.out.println("[Regla 51] Comparador IGUAL encontrado: " + eq); RESULT = eq; :}
-                | NEQ:neq {: System.out.println("[Regla 52] Comparador NO IGUAL encontrado: " + neq); RESULT = neq; :}
-                | MINUS:minus {: System.out.println("[Regla 53] Comparador MENOR QUE encontrado: " + minus); RESULT = minus; :}
-                | MAY:may {: System.out.println("[Regla 54] Comparador MAYOR QUE encontrado: " + may); RESULT = may; :}
-                | MINUS_EQ:minus_eq {: System.out.println("[Regla 55] Comparador MENOR O IGUAL encontrado: " + minus_eq); RESULT = minus_eq; :}
-                | MAY_EQ:may_eq {: System.out.println("[Regla 56] Comparador MAYOR O IGUAL encontrado: " + may_eq); RESULT = may_eq; :};
+comparacion ::= EQ:eq {: System.out.println("[Regla 52] Comparador IGUAL encontrado: " + eq); RESULT = eq; :}
+                | NEQ:neq {: System.out.println("[Regla 53] Comparador NO IGUAL encontrado: " + neq); RESULT = neq; :}
+                | MINUS:minus {: System.out.println("[Regla 54] Comparador MENOR QUE encontrado: " + minus); RESULT = minus; :}
+                | MAY:may {: System.out.println("[Regla 55] Comparador MAYOR QUE encontrado: " + may); RESULT = may; :}
+                | MINUS_EQ:minus_eq {: System.out.println("[Regla 56] Comparador MENOR O IGUAL encontrado: " + minus_eq); RESULT = minus_eq; :}
+                | MAY_EQ:may_eq {: System.out.println("[Regla 57] Comparador MAYOR O IGUAL encontrado: " + may_eq); RESULT = may_eq; :};
