@@ -232,6 +232,7 @@ else ::= OP_ELSE BRA_OP lista BRA_CL {: System.out.println("[Regla 27] Sentencia
         WRITE Constante;
 */
 write ::= OP_WRITE cte DOTCOM {::};
+// | OP_WRITE ID DOTCOM {::};
 
 /*
     Regla 29 BETWEEN

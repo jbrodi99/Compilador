@@ -1,12 +1,13 @@
 DECLARE.SECTION
+	//*Esto es la seccion de declaracion*//
 	[a,b,c,d] := [INT,INT,FLOAT,INT];
 	[x] := [STRING];
 	[w,y,z]:=[INT,STRING,FLOAT];
 ENDDECLARE.SECTION
 
 PROGRAM.SECTION
+	//*Esto es la seccion de programa*//
 	a::=1;
-	//*Primer while*//
 	while( BETWEEN(a, [1 ; 10]); ){
 		if(a == 1){
 			WRITE "a es 1";
