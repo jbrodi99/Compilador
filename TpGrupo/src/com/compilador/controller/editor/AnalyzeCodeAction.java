@@ -130,15 +130,6 @@ public class AnalyzeCodeAction implements ActionListener {
 
             // Instanciar el lexer y parser
             Lexico lexer = new Lexico(reader);
-/*
-            while ((token = lexico.next_token()).sym != sym.EOF) {
-                // Agregar el token al resultado
-                String tokenName = Simbolos.values()[token.sym].name();
-                result.append("Token: '").append(tokenName)
-                        .append("' encontrado, Lexema: '").append(lexico.yytext())
-                        .append("'\n");
-            }
-*/
             // Realizar análisis léxico e imprimir tokens en lexicalResultArea
             Symbol token;
             while ((token = lexer.next_token()).sym != sym.EOF) {

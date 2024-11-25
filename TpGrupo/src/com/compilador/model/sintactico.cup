@@ -231,8 +231,8 @@ else ::= OP_ELSE BRA_OP lista BRA_CL {: System.out.println("[Regla 27] Sentencia
     Regla 28 WRITE
         WRITE Constante;
 */
-write ::= OP_WRITE cte DOTCOM {::};
-// | OP_WRITE ID DOTCOM {::};
+write ::= OP_WRITE cte DOTCOM {::}
+        | OP_WRITE ID:id DOTCOM {: System.out.println("[Regla 30] ID : " + id); RESULT = id; :};
 
 /*
     Regla 29 BETWEEN
@@ -248,10 +248,10 @@ Constante puede ser:
     Regla 32 CONSTANTE STRING
     Regla 33 CONSTANTE BINARIA
 */
-cte ::= CTE_INT:cint {: System.out.println("[Regla 31] Constante INT encontrada: " + cint); RESULT = cint; :}
-        | CTE_REAL:real {: System.out.println("[Regla 32] Constante REAL encontrada: " + real); RESULT = real; :}
-        | CTE_STR:str {: System.out.println("[Regla 33] Constante STR encontrada: " + str); RESULT = str; :}
-        | CTE_BIN:bin {: System.out.println("[Regla 34] Constante BINARIA encontrada: " + bin); RESULT = bin; :};
+cte ::= CTE_INT:cint {: System.out.println("[Regla 32] Constante INT encontrada: " + cint); RESULT = cint; :}
+        | CTE_REAL:real {: System.out.println("[Regla 33] Constante REAL encontrada: " + real); RESULT = real; :}
+        | CTE_STR:str {: System.out.println("[Regla 34] Constante STR encontrada: " + str); RESULT = str; :}
+        | CTE_BIN:bin {: System.out.println("[Regla 35] Constante BINARIA encontrada: " + bin); RESULT = bin; :};
 
 /*
 Expresion puede ser:
@@ -259,8 +259,8 @@ Expresion puede ser:
     Regla 35 EXPRESION - TERMINO
     Regla 36 TERMINO
 */
-expresion ::= expresion OP_SUM termino {: System.out.println("[Regla 35] EXPRESION + TERMINO"); :}
-                | expresion OP_LESS termino {: System.out.println("[Regla 36] EXPRESION - TERMINO"); :}
+expresion ::= expresion OP_SUM termino {: System.out.println("[Regla 36] EXPRESION + TERMINO"); :}
+                | expresion OP_LESS termino {: System.out.println("[Regla 37] EXPRESION - TERMINO"); :}
                 | termino {::};
 
 /*
@@ -269,8 +269,8 @@ Termino puede ser:
     Regla 38 TERMINO / FACTOR
     Regla 39 FACTOR
 */
-termino ::= termino OP_MUL factor {: System.out.println("[Regla 38] TERMINO * FACTOR"); :}
-            | termino OP_DIV factor {: System.out.println("[Regla 39] TERMINO / FACTOR"); :}
+termino ::= termino OP_MUL factor {: System.out.println("[Regla 39] TERMINO * FACTOR"); :}
+            | termino OP_DIV factor {: System.out.println("[Regla 40] TERMINO / FACTOR"); :}
             | factor {::};
 
 /*
@@ -281,11 +281,11 @@ Factor puede ser:
     Regla 43 CONSTANTE REAL
     Regla 44 ID
 */
-factor ::= PAR_OP expresion PAR_CL {: System.out.println("[Regla 41] FACTOR "); :}
-            | CTE_BIN:bin {: System.out.println("[Regla 42] CTE BIN encontrada: " + bin); RESULT = bin; :}
-            | CTE_INT:cint {: System.out.println("[Regla 43] CTE INT encontrada: " + cint); RESULT = cint; :}
-            | CTE_REAL:real {: System.out.println("[Regla 44] CTE REAL encontrada: " + real); RESULT = real; :}
-            | ID:id {: System.out.println("[Regla 45] ID encontrado: " + id); RESULT = id; :};
+factor ::= PAR_OP expresion PAR_CL {: System.out.println("[Regla 42] FACTOR "); :}
+            | CTE_BIN:bin {: System.out.println("[Regla 43] CTE BIN encontrada: " + bin); RESULT = bin; :}
+            | CTE_INT:cint {: System.out.println("[Regla 44] CTE INT encontrada: " + cint); RESULT = cint; :}
+            | CTE_REAL:real {: System.out.println("[Regla 45] CTE REAL encontrada: " + real); RESULT = real; :}
+            | ID:id {: System.out.println("[Regla 46] ID encontrado: " + id); RESULT = id; :};
 
 /*
 Condicion logica puede ser:
@@ -301,12 +301,12 @@ Condicion puede ser:
     Regla 49 BETWEEN
 */
 condicion ::= PAR_OP condicion_logica PAR_CL AND PAR_OP condicion_logica PAR_CL
-                    {: System.out.println("[Regla 47] CONDICION AND detectada"); :}
+                    {: System.out.println("[Regla 48] CONDICION AND detectada"); :}
               | PAR_OP condicion_logica PAR_CL OR PAR_OP condicion_logica PAR_CL
-                    {: System.out.println("[Regla 48] CONDICION OR detectada"); :}
-              | condicion_logica {: System.out.println("[Regla 49] CONDICION LOGICA detectada"); :}
-              | NOT condicion {: System.out.println("[Regla 50] CONDICION NEGADA detectada"); :}
-              | between {: System.out.println("[Regla 51] CONDICION BETWEEN detectada"); :};
+                    {: System.out.println("[Regla 49] CONDICION OR detectada"); :}
+              | condicion_logica {: System.out.println("[Regla 50] CONDICION LOGICA detectada"); :}
+              | NOT condicion {: System.out.println("[Regla 51] CONDICION NEGADA detectada"); :}
+              | between {: System.out.println("[Regla 52] CONDICION BETWEEN detectada"); :};
 
 /*
 Simbolos de comparacion:
@@ -317,9 +317,9 @@ Simbolos de comparacion:
     Regla 54 <=
     Regla 55 >=
 */
-comparacion ::= EQ:eq {: System.out.println("[Regla 52] Comparador IGUAL encontrado: " + eq); RESULT = eq; :}
-                | NEQ:neq {: System.out.println("[Regla 53] Comparador NO IGUAL encontrado: " + neq); RESULT = neq; :}
-                | MINUS:minus {: System.out.println("[Regla 54] Comparador MENOR QUE encontrado: " + minus); RESULT = minus; :}
-                | MAY:may {: System.out.println("[Regla 55] Comparador MAYOR QUE encontrado: " + may); RESULT = may; :}
-                | MINUS_EQ:minus_eq {: System.out.println("[Regla 56] Comparador MENOR O IGUAL encontrado: " + minus_eq); RESULT = minus_eq; :}
-                | MAY_EQ:may_eq {: System.out.println("[Regla 57] Comparador MAYOR O IGUAL encontrado: " + may_eq); RESULT = may_eq; :};
+comparacion ::= EQ:eq {: System.out.println("[Regla 53] Comparador IGUAL encontrado: " + eq); RESULT = eq; :}
+                | NEQ:neq {: System.out.println("[Regla 54] Comparador NO IGUAL encontrado: " + neq); RESULT = neq; :}
+                | MINUS:minus {: System.out.println("[Regla 55] Comparador MENOR QUE encontrado: " + minus); RESULT = minus; :}
+                | MAY:may {: System.out.println("[Regla 56] Comparador MAYOR QUE encontrado: " + may); RESULT = may; :}
+                | MINUS_EQ:minus_eq {: System.out.println("[Regla 57] Comparador MENOR O IGUAL encontrado: " + minus_eq); RESULT = minus_eq; :}
+                | MAY_EQ:may_eq {: System.out.println("[Regla 58] Comparador MAYOR O IGUAL encontrado: " + may_eq); RESULT = may_eq; :};

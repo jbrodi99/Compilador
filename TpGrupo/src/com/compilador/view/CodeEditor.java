@@ -14,7 +14,6 @@ public class CodeEditor extends JFrame {
     private JTextArea resultSyntacticArea;
     private JButton loadButton, analyzeButton, saveButton, showTableButton;
 
-
     public CodeEditor() {
         setTitle("IDE");
         setSize(1000, 700);

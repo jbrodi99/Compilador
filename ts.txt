@@ -15,5 +15,4 @@
 |                          _"a es 2"|   CTE_STR|          |                           "a es 2"|   6|
 |                  _"a es mayor a 2"|   CTE_STR|          |                   "a es mayor a 2"|  14|
 |                              _3.14|  CTE_REAL|          |                               3.14|    |
-|                              _0b11|   CTE_BIN|          |                               0b11|    |
-|                            _"Hola"|   CTE_STR|          |                             "Hola"|   4|
+|                                 _3|   CTE_INT|          |                                  3|    |

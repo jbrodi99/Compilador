@@ -18,9 +18,9 @@ PROGRAM.SECTION
 			b::= a+1;
 			while((b < 10) && (a < 10)){
 				WRITE 3.14;
-				b::= b+1;
-				c::= 0b11;
-				d::="Hola";
+				a::= a+2;
+				b::= b+3;
+				WRITE b;
 			}
 		}
 		a::= a+1;
