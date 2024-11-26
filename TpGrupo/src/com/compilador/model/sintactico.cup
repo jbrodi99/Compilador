@@ -236,10 +236,9 @@ write ::= OP_WRITE cte DOTCOM {::}
 
 /*
     Regla 29 BETWEEN
-        BETWEEN (Expresion, [Expresion; Expresion]);
+        BETWEEN (Expresion, [Expresion; Expresion])
 */
-between ::= OP_BETWEEN PAR_OP expresion COMA SQR_OP expresion DOTCOM expresion SQR_CL PAR_CL DOTCOM
-            {::};
+between ::= OP_BETWEEN PAR_OP expresion COMA SQR_OP expresion DOTCOM expresion SQR_CL PAR_CL {::};
 
 /*
 Constante puede ser:
